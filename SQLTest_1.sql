@@ -1,15 +1,48 @@
 USE master;
-
--- Drop database
-IF DB_ID('TSQL2012') IS NOT NULL DROP DATABASE TSQL2012;
-
--- If database could not be created due to open connections, abort
-IF @@ERROR = 3702 
-   RAISERROR('Database cannot be dropped because there are still open connections.', 127, 127) WITH NOWAIT, LOG;
-
 -- Create database
-CREATE DATABASE TSQL2012;
+IF NOT EXISTS (
+    SELECT name 
+    FROM sys.databases 
+    WHERE name = N'SALES'
+)
+CREATE DATABASE SALES;
 GO
 
-USE TSQL2012;
+IF OBJECT_ID('dbo.Customers', 'U') IS NOT NULL
+    DROP TABLE dbo.Customers;
+GO
+
+USE SALES;
+GO
+
+CREATE TABLE Customers (
+	id INT NOT NULL IDENTITY,
+	name NVARCHAR(50) NOT NULL,
+    CONSTRAINT PK_Products PRIMARY KEY(id)
+);
+GO
+
+IF OBJECT_ID('dbo.Orders', 'U') IS NOT NULL
+    DROP TABLE dbo.Orders;
+GO
+
+CREATE TABLE Orders (
+	id INT NOT NULL IDENTITY,
+	CustomerId INT NOT NULL,
+    CONSTRAINT PK_Categories PRIMARY KEY(id)
+);
+GO
+
+INSERT INTO Customers (name)
+VALUES ('Max'),
+        ('Pavel'),
+        ('Ivan'),
+        ('Leonid')   
+        ;
+GO
+
+INSERT INTO Orders (CustomerId)
+VALUES (2),
+       (4)
+        ;
 GO
